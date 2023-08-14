@@ -54,7 +54,6 @@ router.beforeEach((to) => {
   if (!userStore.token && to.path !== '/login') {
     return '/login'
   }
-  return true
 })
 
 export default router

@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { userGetInfoService, userSetInfoService } from '../../api/user'
+import { userGetInfoService, userSetInfoService } from '@/api/user.js'
 
 // 用户模块 Token setToken removeToken
 export const useUserStore = defineStore(
-  'big-user',
+  'big-user', // 唯一标识，并且使用了持久化插件的话，默认使用这个名字作为本地存储的名字，因此不宜太简单
   () => {
+    //-------用户标识token------//
     const token = ref('')
     const setToken = (newVal) => {
       token.value = newVal
@@ -13,7 +14,7 @@ export const useUserStore = defineStore(
     const removeToken = () => {
       token.value = ''
     }
-
+    //-------用户信息-------//
     const user = ref({})
     const getUser = async () => {
       const res = await userGetInfoService()
@@ -23,6 +24,7 @@ export const useUserStore = defineStore(
       await userSetInfoService(obj)
       user.value = obj
     }
+    // 必须要return将方法和属性暴露出去，不然其他地方使用不了
     return {
       token,
       setToken,
@@ -32,6 +34,7 @@ export const useUserStore = defineStore(
       setUser
     }
   },
+  // 在第三个参数的位置设置是否需要开启持久化
   {
     persist: true
   }

@@ -1,4 +1,7 @@
 <script setup>
+// 接收父组件传递过来的数据
+// 此处用于自定义组件中的title
+// 该组件中用了elementui中的el-card组件，其中<template>中的#header是插槽
 defineProps({
   title: {
     type: String,

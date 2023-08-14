@@ -12,9 +12,11 @@ getList()
 defineProps({
   cid: {
     type: [Number, String]
-  }
+  },
+  getAgain: Boolean
 })
 const emit = defineEmits(['update:cid'])
+defineExpose({ getList })
 </script>
 
 <template>

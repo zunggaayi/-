@@ -13,9 +13,10 @@ import {
 import avatar from '@/assets/default.png'
 import { useUserStore } from '@/stores'
 import { onMounted } from 'vue'
-import router from '../../router'
 import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
 const userStore = useUserStore()
+const router = useRouter()
 onMounted(() => {
   userStore.getUser()
 })
@@ -77,6 +78,8 @@ const handleCommand = (command) => {
               <el-icon><UserFilled /></el-icon>
               <span>个人中心</span>
             </template>
+            <!-- index配置二级路由路径 -->
+            <!-- title副标题 -->
             <el-menu-item-group title="Personal Center">
               <el-menu-item index="/user/profile">
                 <el-icon><List /></el-icon>
@@ -131,8 +134,8 @@ const handleCommand = (command) => {
         <el-main>
           <router-view></router-view>
         </el-main>
-        <el-footer
-          ><p class="text">大事件@2023 created by zunggaayi</p></el-footer
+        <el-footer>
+          <p class="text">大事件@2023 created by zunggaayi</p></el-footer
         >
       </el-container>
     </el-container>

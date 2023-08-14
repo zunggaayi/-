@@ -3,6 +3,7 @@ import PageContainer from '@/components/PageContainer.vue'
 import { userSetPasswordService } from '@/api/user.js'
 import { ref } from 'vue'
 import { useUserStore } from '@/stores'
+import { useRouter } from 'vue-router'
 const formModel = ref({
   old_pwd: '',
   new_pwd: '',
@@ -36,6 +37,7 @@ const onClear = () => {
   formModel.value.re_pwd = ''
   formModel.value.old_pwd = ''
 }
+const router = useRouter()
 const onSubmit = async () => {
   await formRef.value.validate()
   await userSetPasswordService(formModel.value)
@@ -45,6 +47,7 @@ const onSubmit = async () => {
     type: 'warning'
   }).then(() => {
     ElMessage.success('更换密码成功')
+    router.push('./login')
     userStore.removeToken()
     userStore.setUser({})
   })

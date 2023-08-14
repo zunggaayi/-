@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import ChannelSelect from './ChannelSelect.vue'
+import ChannelEdit from './ChannelEdit.vue'
 import { Plus } from '@element-plus/icons-vue'
 import {
   artAddArticleService,
@@ -13,6 +14,19 @@ import { baseURL } from '@/utils/request.js'
 import axios from 'axios'
 const visibleDrawer = ref(false)
 const imageUrl = ref('')
+
+// 兄弟之间通信需要通过父组件作为桥梁
+// 如果第一个组件要向第二个组件发送请求
+// 父组件先接收第一个组件的请求
+// 然后父组件调用第二个组件暴露的方法来完成请求
+const dialog = ref()
+const channelList = ref()
+const addChannel = () => {
+  dialog.value.open({})
+}
+const onSuccess = () => {
+  channelList.value.getList()
+}
 
 //默认表单数据，不需要ref响应式
 const defaultForm = {
@@ -117,7 +131,13 @@ defineExpose({
         </el-input>
       </el-form-item>
       <el-form-item label="文章分类" prop="cate_id">
-        <channel-select v-model="formModel.cate_id"></channel-select>
+        <channel-select
+          v-model="formModel.cate_id"
+          ref="channelList"
+        ></channel-select>
+        <el-button type="primary" @click="addChannel" style="margin-left: 20px"
+          >添加分类</el-button
+        >
       </el-form-item>
       <el-form-item label="文章封面" prop="cover_img">
         <!-- 关闭自动上传，绑定改变时的事件触发 -->
@@ -145,6 +165,7 @@ defineExpose({
         <el-button type="info" @click="onPublish('草稿')">草稿</el-button>
       </el-form-item>
     </el-form>
+    <channel-edit ref="dialog" @success="onSuccess"></channel-edit>
   </el-drawer>
 </template>
 
