@@ -1,8 +1,11 @@
 <script setup>
 import { User, Lock } from '@element-plus/icons-vue'
-import { ref } from 'vue'
-import { userRegisterService } from '@/api/user.js'
-const isRegister = ref(false)
+import { ref, watch } from 'vue'
+import { userRegisterService, userLoginService } from '@/api/user.js'
+import { useUserStore } from '@/stores'
+import { useRouter } from 'vue-router'
+
+const isRegister = ref(true)
 const form = ref()
 
 // 表单对象
@@ -11,14 +14,27 @@ const formModel = ref({
   password: '',
   repassword: ''
 })
-
+// 提交注册函数
 const register = async () => {
   await form.value.validate() // 调用所有校验方法，预校验
-  // console.log('开始注册请求')
   // 注意是ref包装的
   await userRegisterService(formModel.value)
   ElMessage.success('注册成功！')
   isRegister.value = true
+}
+
+const userStore = useUserStore()
+const router = useRouter()
+
+// 登录提交函数
+const login = async () => {
+  await form.value.validate()
+  // console.log('登录')
+  const { data } = await userLoginService(formModel.value)
+  console.log(data)
+  userStore.setToken(data.token)
+  ElMessage.success('登录成功')
+  router.push('/article/manage')
 }
 // 规则配置
 // 非空校验：required，触发时机：trigger:blur(失焦),change(改变)
@@ -39,7 +55,7 @@ const rules = {
     }
   ],
   password: [
-    { required: true, message: '请输入您要设置的密码', trigger: 'blur' },
+    { required: true, message: '请输入密码', trigger: 'blur' },
     {
       pattern: /^\S{6,15}$/,
       message: '密码必须是6-15位的非空字符组成',
@@ -60,6 +76,23 @@ const rules = {
     }
   ]
 }
+
+// 监听表单切换，按需重置表单
+watch(isRegister, () => {
+  if (isRegister.value === true) {
+    formModel.value = {
+      username: formModel.value.username,
+      password: '',
+      repassword: ''
+    }
+  } else {
+    formModel.value = {
+      username: '',
+      password: '',
+      repassword: ''
+    }
+  }
+})
 </script>
 
 <template>
@@ -86,15 +119,26 @@ const rules = {
     <el-col :span="12" class="bg"></el-col>
     <el-col :span="6" :offset="3" class="form">
       <!-- 登录 -->
-      <el-form size="large" v-if="isRegister">
+      <el-form
+        :model="formModel"
+        :rules="rules"
+        size="large"
+        ref="form"
+        v-if="isRegister"
+      >
         <el-form-item>
           <h1>登录</h1>
         </el-form-item>
-        <el-form-item>
-          <el-input placeholder="请输入用户名" :prefix-icon="User"></el-input>
-        </el-form-item>
-        <el-form-item>
+        <el-form-item prop="username">
           <el-input
+            v-model="formModel.username"
+            placeholder="请输入用户名"
+            :prefix-icon="User"
+          ></el-input>
+        </el-form-item>
+        <el-form-item prop="password">
+          <el-input
+            v-model="formModel.password"
             placeholder="请输入密码"
             type="password"
             :prefix-icon="Lock"
@@ -106,7 +150,9 @@ const rules = {
           </div>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" class="button">登录</el-button>
+          <el-button type="primary" class="button" @click="login"
+            >登录</el-button
+          >
         </el-form-item>
         <el-form-item>
           <a href="#" @click="isRegister = false">还没有账号？去注册-></a>

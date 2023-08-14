@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useUserStore } from '@/stores'
 
 // createRouter用于创建路由实例
 // 配置history模式
@@ -40,6 +41,20 @@ const router = createRouter({
       ]
     }
   ]
+})
+
+// 未登录拦截，设置路由导航守卫，与vue2不同的是没有了next，而是通过return来拦截/方性
+// 什么都不写，也不return ，默认放行
+// 根据返回值决定是方性还是拦截
+// 1.undefined/true放行
+// 2.false 拦截至from的页面
+// 3.返回具体路由,对象或路径
+router.beforeEach((to) => {
+  const userStore = useUserStore()
+  if (!userStore.token && to.path !== '/login') {
+    return '/login'
+  }
+  return true
 })
 
 export default router
