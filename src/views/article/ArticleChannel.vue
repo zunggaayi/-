@@ -17,8 +17,6 @@ const getChannelList = async () => {
 getChannelList()
 
 const addChannel = () => {
-  // const res = await artAddChannelService('体育', 'sports')
-  // console.log(res.data)
   dialog.value.open({})
 }
 
